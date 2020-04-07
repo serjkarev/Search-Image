@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,7 @@
 		5231A1A9243C9A4300E96E03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5231A1A7243C9A4300E96E03 /* LaunchScreen.storyboard */; };
 		5231A1B4243C9C5500E96E03 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231A1B3243C9C5500E96E03 /* MainView.swift */; };
 		5231A1B6243CAF3200E96E03 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231A1B5243CAF3200E96E03 /* DataModel.swift */; };
+		5231A1B8243CC6B500E96E03 /* MyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231A1B7243CC6B500E96E03 /* MyTableViewCell.swift */; };
 		D3B53129D2E05E8405E6899E /* Pods_Search_Image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E4A2E166346EBCE252A553 /* Pods_Search_Image.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		5231A1AA243C9A4300E96E03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5231A1B3243C9C5500E96E03 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		5231A1B5243CAF3200E96E03 /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		5231A1B7243CC6B500E96E03 /* MyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTableViewCell.swift; sourceTree = "<group>"; };
 		54B3CC877D03184638CB4780 /* Pods-Search Image.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Image.release.xcconfig"; path = "Target Support Files/Pods-Search Image/Pods-Search Image.release.xcconfig"; sourceTree = "<group>"; };
 		F83B95919277E6824C71F85E /* Pods-Search Image.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Image.debug.xcconfig"; path = "Target Support Files/Pods-Search Image/Pods-Search Image.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -50,7 +52,6 @@
 				F83B95919277E6824C71F85E /* Pods-Search Image.debug.xcconfig */,
 				54B3CC877D03184638CB4780 /* Pods-Search Image.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -107,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				5231A1B3243C9C5500E96E03 /* MainView.swift */,
+				5231A1B7243CC6B500E96E03 /* MyTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -238,6 +240,7 @@
 				5231A1B4243C9C5500E96E03 /* MainView.swift in Sources */,
 				5231A19D243C9A4200E96E03 /* AppDelegate.swift in Sources */,
 				5231A19F243C9A4200E96E03 /* SceneDelegate.swift in Sources */,
+				5231A1B8243CC6B500E96E03 /* MyTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     //MARK:- Properties
-        
+    private var model: DataModel = DataModel()
     private var mainView: MainView? {
         return self.view as? MainView
     }

@@ -12,6 +12,9 @@ class MainView: UIView {
 
     //MARK:- Properties
     
+    public var data: [SearchItem] = [SearchItem(image: UIImage(named: "medium_skarev")!, name: "first"),
+                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "second"),
+                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "third")]
     private var searchBar: UISearchBar?
     private var tableView: UITableView?
     
@@ -39,6 +42,7 @@ class MainView: UIView {
         self.searchBar?.delegate = self
         self.tableView?.delegate = self
         self.tableView?.dataSource = self
+        self.tableView?.register(MyTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
     //MARK:- Methods
@@ -77,17 +81,33 @@ class MainView: UIView {
     //MARK:- UISearchBar delegate methods
 
 extension MainView: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print(searchBar.text)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
+    }
 }
 
     //MARK:- UITableViewDelegate & UITableViewDataSource methods
 
 extension MainView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return data.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? MyTableViewCell {
+            cell.setData(data: data.dropFirst(indexPath.row).first)
+            return cell
+        }
         return UITableViewCell()
     }
     
