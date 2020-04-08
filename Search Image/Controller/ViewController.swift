@@ -46,4 +46,12 @@ extension ViewController: RefreshDataDelegate {
         mainView?.refreshWithNewData(item)
         self.removeSpinner()
     }
+    
+    func showAlert(_ text: String?) {
+        let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { [weak self] action in
+            self?.removeSpinner()
+        }))
+        self.present(alert, animated: true)
+    }
 }

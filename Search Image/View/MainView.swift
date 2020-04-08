@@ -18,7 +18,6 @@ class MainView: UIView {
     //MARK:- Properties
     
     var delegate: SearchDelegate?
-//    public var data = [SearchItem]()
     public var data: Results<SearchItem>!
     private var searchBar: UISearchBar?
     private var tableView: UITableView?
@@ -45,6 +44,7 @@ class MainView: UIView {
         if let table = self.tableView {
             self.addSubview(table)
         }
+        self.searchBar?.placeholder = "Tap to search"
         self.searchBar?.delegate = self
         self.tableView?.delegate = self
         self.tableView?.dataSource = self
@@ -54,12 +54,7 @@ class MainView: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        do {
-            let realm = try Realm()
-            self.data = realm.objects(SearchItem.self)
-        } catch let error as NSError {
-            print(error)
-        }
+        getDataFromRealmDB()
     }
     
     //MARK:- Methods
@@ -85,7 +80,6 @@ class MainView: UIView {
             NSLayoutConstraint(item: table, attribute: .top, relatedBy: .equal, toItem: search, attribute: .bottom, multiplier: 1.0, constant: 0.0),
             NSLayoutConstraint(item: table, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0),
             NSLayoutConstraint(item: table, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0),
-//            NSLayoutConstraint(item: table, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
         ])
         self.tableBottomConstraint = NSLayoutConstraint(item: table, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
         constraints.append(self.tableBottomConstraint!)
@@ -95,6 +89,34 @@ class MainView: UIView {
     
     public func refreshWithNewData(_ data: SearchItem?) {
         guard let dat = data else {return}
+//        if dat.imgPath == nil {
+//            let filename = getDocumentsDirectory().appendingPathComponent(String(Int(Date().timeIntervalSince1970)) + ".png")
+//            print(filename)
+////            dat.imgPath = filename
+//        }
+        saveToRealmDB(dat)
+        tableView?.reloadData()
+    }
+    
+    //MARK:- Manage images
+    
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    //MARK:- Realm
+    
+    private func getDataFromRealmDB() {
+        do {
+            let realm = try Realm()
+            self.data = realm.objects(SearchItem.self)
+        } catch let error as NSError {
+            print(error)
+        }
+    }
+    
+    private func saveToRealmDB(_ dat: SearchItem) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -103,9 +125,9 @@ class MainView: UIView {
         } catch let error as NSError {
             print(error)
         }
-//        self.data.append(dat)
-        tableView?.reloadData()
     }
+    
+    //MARK:- Nitifications
     
     @objc func keyboardWillShow(_ notification:Notification) {
 

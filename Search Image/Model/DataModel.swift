@@ -11,6 +11,7 @@ import RealmSwift
 
 protocol RefreshDataDelegate {
     func refreshViewWithNewData(item: SearchItem?)
+    func showAlert(_ text: String?)
 }
 
 class SearchItem: Object {
@@ -44,12 +45,23 @@ class DataModel {
                                       URLQueryItem(name: "text", value: text)]
         guard let finalURL = imageSearchURL?.url else {return}
         let task = session.dataTask(with: finalURL, completionHandler: { [weak self]
-            (data, responce, error) in
+            (data, response, error) in
+            if error != nil {
+                self?.handleClientError(error)
+                return
+            }
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                self?.handleServerError(response)
+                return
+            }
             guard let dat = data else {return}
             let decoder = JSONDecoder()
             if let finalJSON = try? decoder.decode(Search.self, from: dat) {
                 let randomResult = finalJSON.photos.photo.randomElement()
-                guard let photoId = randomResult?.id else {return}
+                guard let photoId = randomResult?.id else {
+                    self?.handleAnotherErrors("Search is not have results")
+                    return}
                 var infoURL = URLComponents(string: self?.baseURL ?? "")
                 infoURL?.queryItems = [URLQueryItem(name: "method", value: "flickr.photos.getSizes"),
                                         URLQueryItem(name: "api_key", value: "edd40a7b3f7ff27d61f72b440e56e16b"),
@@ -58,7 +70,16 @@ class DataModel {
                                         URLQueryItem(name: "nojsoncallback", value: "1")]
                 guard let finalInfoURL = infoURL?.url else {return}
                 let task = session.dataTask(with: finalInfoURL, completionHandler: {
-                    (data, responce, error) in
+                    (data, response, error) in
+                    if error != nil {
+                        self?.handleClientError(error)
+                        return
+                    }
+                    guard let httpResponse = response as? HTTPURLResponse,
+                          (200...299).contains(httpResponse.statusCode) else {
+                        self?.handleServerError(response)
+                        return
+                    }
                     guard let datInfo = data else {return}
                     if let finalInfoJSON = try? decoder.decode(PhotoInfo.self, from: datInfo) {
                         self?.dataItem = SearchItem(imageURL: finalInfoJSON.sizes.size[4].source, name: text)
@@ -67,15 +88,36 @@ class DataModel {
                             self?.delegate?.refreshViewWithNewData(item: self?.dataItem)
                         }
                     } else {
-                        print("Error in InfoJSON Decoding")
+                        self?.handleAnotherErrors("Error in InfoJSON Decoding")
                     }
                 })
                 task.resume()
             } else {
-                print("Error in JSON Decoding")
+                self?.handleAnotherErrors("Error in JSON Decoding")
             }
         })
         task.resume()
+    }
+    
+    private func handleServerError(_ responce: URLResponse?) {
+        print(responce)
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.showAlert("Problem with responce from server")
+        }
+    }
+    
+    private func handleClientError(_ error: Error?){
+        print(error)
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.showAlert("Problem with client")
+        }
+    }
+    
+    private func handleAnotherErrors(_ text: String){
+        print(text)
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.showAlert(text)
+        }
     }
     
 }

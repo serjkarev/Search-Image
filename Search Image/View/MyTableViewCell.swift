@@ -19,10 +19,13 @@ class MyTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        img.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
+        self.img.translatesAutoresizingMaskIntoConstraints = false
+        self.label.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(img)
         self.contentView.addSubview(label)
+        self.img.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleBottomMargin, .flexibleRightMargin, .flexibleLeftMargin, .flexibleTopMargin]
+        self.img.contentMode = .scaleAspectFit
+        self.img.clipsToBounds = true
         self.label.numberOfLines = 0
         self.label.textAlignment = .center
         makeConstraints()
