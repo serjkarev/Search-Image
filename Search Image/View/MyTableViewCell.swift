@@ -23,29 +23,32 @@ class MyTableViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(img)
         self.contentView.addSubview(label)
+        self.label.numberOfLines = 0
+        self.label.textAlignment = .center
         makeConstraints()
     }
     
     private func makeConstraints() {
         var constraints: [NSLayoutConstraint] = []
         constraints.append(contentsOf: [
-            NSLayoutConstraint(item: img, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: img, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: img, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: img, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+            NSLayoutConstraint(item: img, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 5.0),
+            NSLayoutConstraint(item: img, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 5.0),
+            NSLayoutConstraint(item: img, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 140),
+            NSLayoutConstraint(item: img, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 140),
+            NSLayoutConstraint(item: img, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: -5.0)
         ])
         constraints.append(contentsOf: [
-            NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: img, attribute: .trailing, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: label, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: label, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+            NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 5.0),
+            NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: img, attribute: .trailing, multiplier: 1.0, constant: 5.0),
+            NSLayoutConstraint(item: label, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: -5.0),
+            NSLayoutConstraint(item: label, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: -5.0)
         ])
         self.removeConstraints(self.constraints)
         self.addConstraints(constraints)
     }
     
     public func setData(data: SearchItem?) {
-        self.img.image = data?.img
+//        self.img.image = data?.img
         self.label.text = data?.name
     }
     

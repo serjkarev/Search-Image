@@ -12,9 +12,18 @@ class MainView: UIView {
 
     //MARK:- Properties
     
-    public var data: [SearchItem] = [SearchItem(image: UIImage(named: "medium_skarev")!, name: "first"),
-                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "second"),
-                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "third")]
+//    public var data: [SearchItem] = [SearchItem(image: UIImage(named: "medium_skarev")!, name: "first0"),
+//                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "second0"),
+//                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "third0"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first1"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second1"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third1"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first2"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second2"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third2"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first3"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second3"),
+//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third3")]
     private var searchBar: UISearchBar?
     private var tableView: UITableView?
     
@@ -43,6 +52,7 @@ class MainView: UIView {
         self.tableView?.delegate = self
         self.tableView?.dataSource = self
         self.tableView?.register(MyTableViewCell.self, forCellReuseIdentifier: "cell")
+        self.tableView?.allowsSelection = false
     }
     
     //MARK:- Methods
@@ -99,6 +109,9 @@ extension MainView: UISearchBarDelegate {
     //MARK:- UITableViewDelegate & UITableViewDataSource methods
 
 extension MainView: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count
     }
