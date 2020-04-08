@@ -7,25 +7,22 @@
 //
 
 import UIKit
+import RealmSwift
+
+protocol SearchDelegate {
+    func startToSearch(_ text: String)
+}
 
 class MainView: UIView {
 
     //MARK:- Properties
     
-//    public var data: [SearchItem] = [SearchItem(image: UIImage(named: "medium_skarev")!, name: "first0"),
-//                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "second0"),
-//                                     SearchItem(image: UIImage(named: "medium_skarev")!, name: "third0"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first1"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second1"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third1"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first2"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second2"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third2"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "first3"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "second3"),
-//                                        SearchItem(image: UIImage(named: "medium_skarev")!, name: "third3")]
+    var delegate: SearchDelegate?
+//    public var data = [SearchItem]()
+    public var data: Results<SearchItem>!
     private var searchBar: UISearchBar?
     private var tableView: UITableView?
+    private var tableBottomConstraint: NSLayoutConstraint?
     
     // MARK: Init and Deinit
 
@@ -53,6 +50,16 @@ class MainView: UIView {
         self.tableView?.dataSource = self
         self.tableView?.register(MyTableViewCell.self, forCellReuseIdentifier: "cell")
         self.tableView?.allowsSelection = false
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        do {
+            let realm = try Realm()
+            self.data = realm.objects(SearchItem.self)
+        } catch let error as NSError {
+            print(error)
+        }
     }
     
     //MARK:- Methods
@@ -78,10 +85,39 @@ class MainView: UIView {
             NSLayoutConstraint(item: table, attribute: .top, relatedBy: .equal, toItem: search, attribute: .bottom, multiplier: 1.0, constant: 0.0),
             NSLayoutConstraint(item: table, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0),
             NSLayoutConstraint(item: table, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0),
-            NSLayoutConstraint(item: table, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+//            NSLayoutConstraint(item: table, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
         ])
+        self.tableBottomConstraint = NSLayoutConstraint(item: table, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+        constraints.append(self.tableBottomConstraint!)
         self.removeConstraints(self.constraints)
         self.addConstraints(constraints)
+    }
+    
+    public func refreshWithNewData(_ data: SearchItem?) {
+        guard let dat = data else {return}
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.add(dat)
+            }
+        } catch let error as NSError {
+            print(error)
+        }
+//        self.data.append(dat)
+        tableView?.reloadData()
+    }
+    
+    @objc func keyboardWillShow(_ notification:Notification) {
+
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            tableView?.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+        }
+    }
+    @objc func keyboardWillHide(_ notification:Notification) {
+
+        if ((notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+            tableView?.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        }
     }
     
 }
@@ -96,7 +132,8 @@ extension MainView: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print(searchBar.text)
+        self.endEditing(true)
+        delegate?.startToSearch(searchBar.text ?? "")
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -124,5 +161,18 @@ extension MainView: UITableViewDelegate, UITableViewDataSource {
         return UITableViewCell()
     }
     
-    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            do {
+                let realm = try Realm()
+                let deleteItem = self.data[indexPath.row]
+                try realm.write {
+                    realm.delete(deleteItem)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                }
+            } catch let error as NSError {
+                print(error)
+            }
+        }
+    }
 }

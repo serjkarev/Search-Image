@@ -7,12 +7,19 @@
 //
 
 import UIKit
+import RealmSwift
 
-struct SearchItem {
-    let imgURL: String?
-    let name: String
+protocol RefreshDataDelegate {
+    func refreshViewWithNewData(item: SearchItem?)
+}
+
+class SearchItem: Object {
+    @objc dynamic var imgURL: String?
+    @objc dynamic var imgPath: String?
+    @objc dynamic var name: String = ""
     
-    init(imageURL: String?, name: String) {
+    convenience init(imageURL: String?, name: String) {
+        self.init()
         self.imgURL = imageURL
         self.name = name
     }
@@ -21,15 +28,12 @@ struct SearchItem {
 class DataModel {
     
     public var dataItem: SearchItem?
+    var delegate: RefreshDataDelegate?
     
     private let key: String = "edd40a7b3f7ff27d61f72b440e56e16b"
 //    private let secret: String = "f2ab11078f508cfd"
     private let baseURL: String = "https://api.flickr.com/services/rest"
-    
-//    init() {
-//        self.getData("cat")
-//    }
-    
+
     public func getData(_ text: String) {
         let session = URLSession(configuration: .default)
         var imageSearchURL = URLComponents(string: baseURL)
@@ -47,8 +51,7 @@ class DataModel {
                 let randomResult = finalJSON.photos.photo.randomElement()
                 guard let photoId = randomResult?.id else {return}
                 var infoURL = URLComponents(string: self?.baseURL ?? "")
-                infoURL?.queryItems = [
-                                        URLQueryItem(name: "method", value: "flickr.photos.getInfo"),
+                infoURL?.queryItems = [URLQueryItem(name: "method", value: "flickr.photos.getSizes"),
                                         URLQueryItem(name: "api_key", value: "edd40a7b3f7ff27d61f72b440e56e16b"),
                                         URLQueryItem(name: "photo_id", value: photoId),
                                         URLQueryItem(name: "format", value: "json"),
@@ -58,8 +61,11 @@ class DataModel {
                     (data, responce, error) in
                     guard let datInfo = data else {return}
                     if let finalInfoJSON = try? decoder.decode(PhotoInfo.self, from: datInfo) {
-                        self?.dataItem = SearchItem(imageURL: finalInfoJSON.photo.urls.url.dropFirst(0).first?.content, name: text)
+                        self?.dataItem = SearchItem(imageURL: finalInfoJSON.sizes.size[4].source, name: text)
 //                        print(finalInfoJSON.photo.urls.url)
+                        DispatchQueue.main.async {
+                            self?.delegate?.refreshViewWithNewData(item: self?.dataItem)
+                        }
                     } else {
                         print("Error in InfoJSON Decoding")
                     }
@@ -97,24 +103,25 @@ struct Photo: Codable {
 
 // MARK: - PhotoInfo
 struct PhotoInfo: Codable {
-    let photo: Phot
+    let sizes: Sizes
+    let stat: String
 }
 
-// MARK: - Photo
-struct Phot: Codable {
-    let urls: Urls
+// MARK: - Sizes
+struct Sizes: Codable {
+    let canblog, canprint, candownload: Int
+    let size: [Size]
 }
 
-// MARK: - Urls
-struct Urls: Codable {
-    let url: [URLElement]
+// MARK: - Size
+struct Size: Codable {
+    let label: String
+    let width, height: Int
+    let source: String
+    let url: String
+    let media: Media
 }
 
-// MARK: - URLElement
-struct URLElement: Codable {
-    let content: String
-
-    enum CodingKeys: String, CodingKey {
-        case content = "_content"
-    }
+enum Media: String, Codable {
+    case photo = "photo"
 }

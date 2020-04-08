@@ -48,7 +48,10 @@ class MyTableViewCell: UITableViewCell {
     }
     
     public func setData(data: SearchItem?) {
-//        self.img.image = data?.img
+        guard let stringURL = data?.imgURL else {return}
+        if let url = URL(string: stringURL) {
+            self.img.load(url: url)
+        }
         self.label.text = data?.name
     }
     
