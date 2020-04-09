@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SDWebImage
 
 class MyTableViewCell: UITableViewCell {
 
@@ -62,50 +63,58 @@ class MyTableViewCell: UITableViewCell {
     }
     
     public func setData(data: SearchItem?) {
-        guard let stringURL = data?.imgURL else {return}
-        if data?.imgPath == nil {
-            if let url = URL(string: stringURL) {
-                var pathToFile: String = ""
-                self.img.load(url: url)
-                if let imageToSave = self.img.image {
-                    pathToFile = saveImageDocumentDirectory(imageToSave)
-                }
-                addFilePathForItem(pathToFile, data)
-            }
-        } else {
-            self.img.image = UIImage(contentsOfFile: data?.imgPath ?? "")
-        }
         self.label.text = data?.name
+        guard let str = data?.imgURL else {return}
+        if let url = URL(string: str) {
+            self.img.sd_setImage(with: url, completed: nil)
+        }
     }
     
-    private func addFilePathForItem(_ path: String, _ item: SearchItem?) {
-        print(path)
-        do {
-            let realm = try Realm()
-            try realm.write {
-                item?.imgPath = path
-            }
-        } catch let error as NSError {
-            print(error)
-        }
-    }
+//    public func setData(data: SearchItem?) {
+//        guard let stringURL = data?.imgURL else {return}
+//        if data?.imgPath == nil {
+//            if let url = URL(string: stringURL) {
+//                var pathToFile: String = ""
+//                self.img.load(url: url)
+//                if let imageToSave = self.img.image {
+//                    pathToFile = saveImageDocumentDirectory(imageToSave)
+//                }
+//                addFilePathForItem(pathToFile, data)
+//            }
+//        } else {
+//            self.img.image = UIImage(contentsOfFile: data?.imgPath ?? "")
+//        }
+//        self.label.text = data?.name
+//    }
+    
+//    private func addFilePathForItem(_ path: String, _ item: SearchItem?) {
+////        print(path)
+//        do {
+//            let realm = try Realm()
+//            try realm.write {
+//                item?.imgPath = path
+//            }
+//        } catch let error as NSError {
+//            print(error)
+//        }
+//    }
     
     //MARK:- Manage images
     
-    private func getDirectoryPath() -> NSURL {
-        let documentDirectoryPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString)
-        let pathWithFolderName = documentDirectoryPath.appendingPathComponent("FolderName")
-        let url = NSURL(string: pathWithFolderName)
-        return url!
-    }
-    
-    private func saveImageDocumentDirectory(_ imgForSave: UIImage?) -> String{
-        let fileManager = FileManager.default
-        let url = (self.getDirectoryPath() as NSURL)
-        let imagePath = url.appendingPathComponent(String(Int(Date().timeIntervalSince1970)) + ".png")
-        let urlString: String = imagePath!.absoluteString
-        let imageData = UIImage.pngData(imgForSave!)
-        fileManager.createFile(atPath: urlString as String, contents: imageData(), attributes: nil)
-        return urlString
-     }
+//    private func getDirectoryPath() -> NSURL {
+//        let documentDirectoryPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString)
+//        let pathWithFolderName = documentDirectoryPath.appendingPathComponent("FolderName")
+//        let url = NSURL(string: pathWithFolderName)
+//        return url!
+//    }
+//
+//    private func saveImageDocumentDirectory(_ imgForSave: UIImage?) -> String{
+//        let fileManager = FileManager.default
+//        let url = (self.getDirectoryPath() as NSURL)
+//        let imagePath = url.appendingPathComponent(String(Int(Date().timeIntervalSince1970)) + ".png")
+//        let urlString: String = imagePath!.absoluteString
+//        let imageData = UIImage.pngData(imgForSave!)
+//        fileManager.createFile(atPath: urlString as String, contents: imageData(), attributes: nil)
+//        return urlString
+//     }
 }

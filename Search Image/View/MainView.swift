@@ -115,15 +115,16 @@ class MainView: UIView {
         }
     }
     
-    private func deleteImageFromDirectory(_ url: String?) {
-        let fileManager = FileManager.default
-        do {
-            try fileManager.removeItem(atPath: url ?? "")
-        } catch {
-            print("Error when try to delete image from Document directory")
-        }
-        
-    }
+//    private func deleteImageFromDirectory(_ url: String?) {
+//        let fileManager = FileManager.default
+//        guard let pathUrl = url else {return}
+//        do {
+//            try fileManager.removeItem(atPath: pathUrl)
+//        } catch {
+//            print("Error when try to delete image from Document directory")
+//        }
+//        
+//    }
     
     //MARK:- Nitifications
     
@@ -186,7 +187,7 @@ extension MainView: UITableViewDelegate, UITableViewDataSource {
             do {
                 let realm = try Realm()
                 let deleteItem = self.data[indexPath.row]
-                self.deleteImageFromDirectory(deleteItem.imgPath)
+//                self.deleteImageFromDirectory(deleteItem.imgPath)
                 try realm.write {
                     realm.delete(deleteItem)
                     tableView.deleteRows(at: [indexPath], with: .fade)
