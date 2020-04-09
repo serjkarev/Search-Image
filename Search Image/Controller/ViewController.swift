@@ -24,10 +24,23 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        createFolderInDocumentDirectory() 
         super.viewDidLoad()
         mainView?.delegate = self
         model.delegate = self
         mainView?.setupUI()
+    }
+    
+    
+    //MARK:- Maiaging files
+    
+    func createFolderInDocumentDirectory() {
+        let fileManager = FileManager.default
+        let PathWithFolderName = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("FolderName")
+        print("Document Directory Folder Path :- ",PathWithFolderName)
+        if !fileManager.fileExists(atPath: PathWithFolderName) {
+            try! fileManager.createDirectory(atPath: PathWithFolderName, withIntermediateDirectories: true, attributes: nil)
+        }
     }
     
 }

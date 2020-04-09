@@ -89,20 +89,8 @@ class MainView: UIView {
     
     public func refreshWithNewData(_ data: SearchItem?) {
         guard let dat = data else {return}
-//        if dat.imgPath == nil {
-//            let filename = getDocumentsDirectory().appendingPathComponent(String(Int(Date().timeIntervalSince1970)) + ".png")
-//            print(filename)
-////            dat.imgPath = filename
-//        }
         saveToRealmDB(dat)
         tableView?.reloadData()
-    }
-    
-    //MARK:- Manage images
-    
-    func getDocumentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
     }
     
     //MARK:- Realm
@@ -125,6 +113,16 @@ class MainView: UIView {
         } catch let error as NSError {
             print(error)
         }
+    }
+    
+    private func deleteImageFromDirectory(_ url: String?) {
+        let fileManager = FileManager.default
+        do {
+            try fileManager.removeItem(atPath: url ?? "")
+        } catch {
+            print("Error when try to delete image from Document directory")
+        }
+        
     }
     
     //MARK:- Nitifications
@@ -188,6 +186,7 @@ extension MainView: UITableViewDelegate, UITableViewDataSource {
             do {
                 let realm = try Realm()
                 let deleteItem = self.data[indexPath.row]
+                self.deleteImageFromDirectory(deleteItem.imgPath)
                 try realm.write {
                     realm.delete(deleteItem)
                     tableView.deleteRows(at: [indexPath], with: .fade)

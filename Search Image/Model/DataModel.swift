@@ -100,14 +100,14 @@ class DataModel {
     }
     
     private func handleServerError(_ responce: URLResponse?) {
-        print(responce)
+        print(responce as Any)
         DispatchQueue.main.async { [weak self] in
             self?.delegate?.showAlert("Problem with responce from server")
         }
     }
     
     private func handleClientError(_ error: Error?){
-        print(error)
+        print(error as Any)
         DispatchQueue.main.async { [weak self] in
             self?.delegate?.showAlert("Problem with client")
         }
